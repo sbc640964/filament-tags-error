@@ -10,8 +10,12 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Filters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Filters\QueryBuilder\Constraints;
+use Filament\Tables\Enums\FiltersLayout;
+
 
 
 
@@ -27,7 +31,10 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required(),
-                Forms\Components\SpatieTagsInput::make('tags'),
+                //Forms\Components\SpatieTagsInput::make('tags'),
+                Forms\Components\TagsInput::make('tags')->suggestions([
+                	'test', 'help'
+                ]),
                     
             ]);
     }
@@ -53,8 +60,12 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+            	Filters\QueryBuilder::make()
+			->constraints([
+			    Constraints\TextConstraint::make('name'),
+			    Constraints\TextConstraint::make('email'),
+			])
+            ]) 
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
