@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Imports\UserImporter;
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,10 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Filters;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Filters\QueryBuilder\Constraints;
-use Filament\Tables\Enums\FiltersLayout;
 
 
 
@@ -35,13 +32,17 @@ class UserResource extends Resource
                 Forms\Components\TagsInput::make('tags')->suggestions([
                 	'test', 'help'
                 ]),
-                    
+
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ImportAction::make('import')
+                    ->importer(UserImporter::class)
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -65,7 +66,7 @@ class UserResource extends Resource
 			    Constraints\TextConstraint::make('name'),
 			    Constraints\TextConstraint::make('email'),
 			])
-            ]) 
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
